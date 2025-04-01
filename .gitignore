@@ -1,0 +1,24 @@
+# Entornos virtuales de Python
+Python/venv/
+env/
+Python/.venv/
+ENV/
+
+# Archivos de Python generados
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de entorno y sensibles
+.env
+.env.local
+.env.prod
+
+# Dependencias instaladas
+*.egg-info/
+pip-selfcheck.json
+
+# Editor/IDE
+.vscode/
+.idea/
