@@ -14,10 +14,14 @@ def consultar_datos():
     consultaSQL.execute("SELECT * FROM clientes")
     return(consultaSQL.fetchall())
 
+def eliminar_registro(id):
+    consultaSQL.execute("DELETE FROM clientes WHERE id = ?", (id))
+    conectorSQL.commit()
+
 # Herramientas para manejo de SQL
+conectorSQL = sql.connect("Python/base_datos.db")
+consultaSQL = conectorSQL.cursor()
 try:
-    conectorSQL = sql.connect("Python/base_datos.db")
-    consultaSQL = conectorSQL.cursor()
     consultaSQL.execute('''
         CREATE TABLE IF NOT EXISTS clientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,8 +65,8 @@ with pestaña1:
         cedula = st.text_input("Cédula del Cliente *", key='cedula')
         email = st.text_input("Email del Cliente", key='email')
         telefono = st.text_input("Teléfono del Cliente *", key='telefono')
-        compra = st.text_input("Fecha de Ultima compra", key='compra')
-        submit = st.form_submit_button("Registar Cliente")
+        compra = st.date_input("Fecha de Ultima compra", key='today')
+        submit = st.form_submit_button("Registrar Cliente")
         if submit:
             if not nombre or not cedula or not telefono:
                 st.error("Ingrese todos los campos (*).")
@@ -80,9 +84,27 @@ with pestaña2:
     )
     # Datos esteticamente mostrados
     st.title("Listado de Clientes Registrados")
-    st.dataframe(
-        listaClientes, hide_index=True, use_container_width=True
-    )
+    actualizarLista = st.button("Actualizar la Lista")
+    listado = st.dataframe(listaClientes, hide_index=True, use_container_width=True)
+    st.header("Eliminar Cliente del Registro")
+    if actualizarLista:
+        st.rerun()
+    with st.form("eliminar_registro"):
+        id_cliente = st.text_input("ID del Cliente")
+        submit_eliminar = st.form_submit_button("Eliminar Registro")
+        if submit_eliminar:
+            try:
+                id_cliente = int(id_cliente)
+                if not id_cliente:
+                    st.error("Ingrese un ID de Cliente.")
+                else:
+                    try:
+                        eliminar_registro(str(id_cliente))
+                        st.success(f"Cliente de ID {id_cliente} Eliminado.")
+                    except ValueError:
+                        st.write(ValueError)
+            except ValueError:
+                st.error("Ingrese un ID válido")
 
 with pestaña3:
     st.header("Horario de Actividad")
